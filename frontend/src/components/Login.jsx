@@ -159,6 +159,78 @@ export default function Login() {
             />
           </div>
 
+          {authMode === 'register_patient' && (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>Date of Birth</label>
+                  <input 
+                    required
+                    type="date"
+                    value={birthDate} 
+                    onChange={(e) => setBirthDate(e.target.value)} 
+                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>Gender</label>
+                  <select 
+                    required
+                    value={gender} 
+                    onChange={(e) => setGender(e.target.value)} 
+                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', appearance: 'none' }}
+                  >
+                    <option value="">Select...</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>Blood Group</label>
+                  <select 
+                    value={bloodGroup} 
+                    onChange={(e) => setBloodGroup(e.target.value)} 
+                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', appearance: 'none' }}
+                  >
+                    <option value="">Select...</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>Weight (kg)</label>
+                  <input 
+                    type="number"
+                    placeholder="e.g. 70"
+                    value={weight} 
+                    onChange={(e) => setWeight(e.target.value)} 
+                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>Height (cm)</label>
+                  <input 
+                    type="number"
+                    placeholder="e.g. 175"
+                    value={height} 
+                    onChange={(e) => setHeight(e.target.value)} 
+                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
           {authMode === 'register_doctor' && (
             <>
               <div>
