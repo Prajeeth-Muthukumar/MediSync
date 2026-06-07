@@ -6,3 +6,4 @@ twilio
 django-cors-headers
 langchain-core
 langchain-community
+gunicorn
