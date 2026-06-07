@@ -7,15 +7,15 @@ from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 logger = logging.getLogger(__name__)
 
 class UnifiedMongoDBClient:
-    def __init__(self, uri="mongodb://localhost:27017/", timeout_ms=1500, db_name="caresync_integrated_db"):
-        self.uri = uri
+    def __init__(self, uri=None, timeout_ms=5000, db_name="caresync_integrated_db"):
+        self.uri = os.environ.get('MONGO_URI', uri or "mongodb://localhost:27017/")
         self.db_name = db_name
         self.client = None
         self.db = None
         self.connected = False
         
         try:
-            self.client = MongoClient(uri, serverSelectionTimeoutMS=timeout_ms)
+            self.client = MongoClient(self.uri, serverSelectionTimeoutMS=timeout_ms)
             self.client.admin.command('ping')
             self.db = self.client[self.db_name]
             self.connected = True
