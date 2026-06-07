@@ -11,7 +11,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const API_BASE = 'http://127.0.0.1:8000/donor';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000') + '/donor';
 
 function MapUpdater({ center, zoom }) {
   const map = useMap();
@@ -62,7 +62,7 @@ export default function DonorNetwork() {
       let externalAssets = [];
       if (assetType === 'all' || assetType === 'blood_bank') {
         try {
-          const extRes = await fetch(`http://127.0.0.1:8000/api/eraktkosh/nearby/?lat=${lat}&lng=${lng}`);
+          const extRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/eraktkosh/nearby/?lat=${lat}&lng=${lng}`);
           if (extRes.ok) {
             const extData = await extRes.json();
             externalAssets = (extData.blood_banks || []).map(b => ({

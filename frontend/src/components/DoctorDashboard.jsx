@@ -3,7 +3,7 @@ import { LogOut, Search, Activity, FileText, Plus, Trash2, ShieldAlert, CheckCir
 import RodOfAsclepius from './RodOfAsclepius'
 import AuthContext from '../context/AuthContext'
 
-const API_BASE = 'http://127.0.0.1:8000/api'
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000') + '/api'
 
 const ICD10_LIST = [
   { code: 'I10', display: 'Essential (primary) hypertension' },

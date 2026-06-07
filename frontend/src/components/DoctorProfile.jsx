@@ -4,7 +4,7 @@ import { User, ShieldCheck, Calendar, Clock, ArrowLeft, Star, Award, CheckCircle
 import { Edit3, Save } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 
-const API_BASE = 'http://127.0.0.1:8000/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000') + '/api';
 
 export default function DoctorProfile() {
   const { username } = useParams();

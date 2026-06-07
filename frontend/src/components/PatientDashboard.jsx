@@ -4,7 +4,7 @@ import { LogOut, User, ShieldCheck, Lock, Unlock, Search, CheckCircle2, AlertCir
 import RodOfAsclepius from './RodOfAsclepius'
 import AuthContext from '../context/AuthContext'
 
-const API_BASE = 'http://127.0.0.1:8000/api'
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000') + '/api'
 
 function PatientDashboard() {
   const { user, logout: onLogout } = useContext(AuthContext);

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 import { Bot, Send, User, Sparkles, BrainCircuit, Activity } from 'lucide-react';
 
-const API_BASE = 'http://127.0.0.1:8000/ai';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000') + '/ai';
 
 export default function AiAssistant() {
   const { user } = useContext(AuthContext);
