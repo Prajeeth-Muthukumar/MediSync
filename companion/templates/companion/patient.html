@@ -1,0 +1,205 @@
+{% extends 'companion/base.html' %}
+
+{% block title %}CareSync Patient Companion{% endblock %}
+
+{% block extra_head %}
+<style>
+    .patient-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    @media (min-width: 992px) {
+        .patient-grid {
+            grid-template-columns: 0.9fr 1.1fr;
+        }
+    }
+    
+    .timeline-container {
+        position: relative;
+        padding-top: 10px;
+    }
+    
+    .med-calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 14px;
+    }
+    
+    .pharmacy-card {
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .pharmacy-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Patient Header Portal -->
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 30px;">
+    <div>
+        <h1 class="neon-title" style="font-size: 2.2rem; margin-bottom: 8px;">CareSync Patient Companion</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Active Portal: <strong class="text-slate-300">{{ selected_patient.name }}</strong> | Daily Medication Schedule & Pharmacy Hub</p>
+    </div>
+    
+    <!-- Patient Selector Switcher -->
+    <div class="glass-card" style="padding: 10px 16px; display: flex; align-items: center; gap: 12px; border-color: rgba(6,182,212,0.3);">
+        <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Switch Patient:</span>
+        <select onchange="location.href='?patient_id=' + this.value" class="form-input" style="padding: 6px 12px !important; font-size: 0.85rem;">
+            {% for p in patients %}
+                <option value="{{ p.id }}" {% if selected_patient.id == p.id %}selected{% endif %}>
+                    {{ p.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{% if selected_patient %}
+<div class="patient-grid">
+    
+    <!-- Left Column: Daily Medication Calendar & Timeline -->
+    <div>
+        <div class="glass-card" style="padding: 30px;" id="patient-timeline-section">
+            <div class="med-calendar-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i data-lucide="calendar" style="color: var(--text-cyan);"></i>
+                    <h2 style="font-size: 1.25rem;">Daily Engagement Calendar</h2>
+                </div>
+                <span class="badge-status badge-taken font-mono text-[10px]">TODAY</span>
+            </div>
+            
+            {% if reminders %}
+                <div class="timeline-container">
+                    {% for r in reminders %}
+                        <div class="timeline-item {% if r.status == 'Taken' %}taken{% elif r.status == 'Missed' %}missed{% endif %}">
+                            <div class="timeline-time">{{ r.scheduled_time|slice:"11:" }}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap;">
+                                <div>
+                                    <h4 style="font-size: 1.05rem; font-weight: 700; color: #FFF; margin-bottom: 2px;">{{ r.medication_name }}</h4>
+                                    <p style="color: var(--text-muted); font-size: 0.85rem;">Dosage: <strong class="text-slate-300">{{ r.dosage }}</strong> | Freq: {{ r.parsed_frequency }}</p>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <!-- Status badge -->
+                                    {% if r.status == 'Pending' %}
+                                        <span class="badge-status badge-pending">PENDING</span>
+                                    {% elif r.status == 'Sent' %}
+                                        <span class="badge-status badge-sent">ALERT SENT</span>
+                                    {% elif r.status == 'Taken' %}
+                                        <span class="badge-status badge-taken">TAKEN</span>
+                                    {% else %}
+                                        <span class="badge-status badge-missed">MISSED</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Action triggers (Mark Taken / Missed) -->
+                            {% if r.status == 'Pending' or r.status == 'Sent' %}
+                                <div style="display: flex; gap: 10px; margin-top: 14px;">
+                                    <a href="/patient/take/{{ r.id }}/" class="btn-neon-green" style="padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; text-decoration: none;">
+                                        <i data-lucide="check" style="width: 14px; height: 14px;"></i> Confirm Taken
+                                    </a>
+                                    <a href="/patient/miss/{{ r.id }}/" class="btn-glass" style="padding: 6px 14px; font-size: 0.8rem; border-color: rgba(239,68,68,0.2); color: #EF4444; display: flex; align-items: center; gap: 6px; text-decoration: none; background: rgba(239,68,68,0.03);">
+                                        <i data-lucide="x" style="width: 14px; height: 14px;"></i> Missed
+                                    </a>
+                                </div>
+                            {% elif r.status == 'Taken' %}
+                                <p style="color: var(--text-green); font-size: 0.78rem; margin-top: 8px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                    <i data-lucide="circle-check" style="width: 14px; height: 14px;"></i> Taken at {{ r.taken_time|slice:"11:" }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 40px 0; color: var(--text-muted);">
+                    <i data-lucide="calendar-x" style="width: 36px; height: 36px; opacity: 0.4; margin-bottom: 12px;"></i>
+                    <p style="font-size: 0.95rem;">No active medications scheduled for today.</p>
+                    <p style="font-size: 0.8rem; margin-top: 4px;">Please ask your physician to create a prescription from the Doctor Workspace.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Right Column: Integrated Pharmacy Cost Comparisons -->
+    <div>
+        <div style="margin-bottom: 20px;">
+            <h2 style="font-size: 1.3rem; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="shopping-bag" style="color: var(--text-cyan);"></i> Pharmacy Affiliate Integrations
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Compare medication prices and order directly from accredited online pharmacies at discounted affiliate rates.</p>
+        </div>
+        
+        {% if prescriptions %}
+            {% for rx in prescriptions %}
+                {% for med in rx.medications %}
+                    <div class="glass-card pharmacy-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 12px; margin-bottom: 16px;">
+                            <div>
+                                <h3 style="font-size: 1.15rem; font-weight: 700; color: #FFF;">{{ med.name }}</h3>
+                                <p style="font-size: 0.78rem; color: var(--text-cyan); font-mono: uppercase; margin-top: 2px;">Ingredients: {{ med.comparisons.active_ingredients }}</p>
+                            </div>
+                            <span class="badge-status badge-taken font-mono" style="font-size: 10px;">Prescribed By: {{ rx.doctor_name }}</span>
+                        </div>
+                        
+                        <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                            <span>Standard Retail Price:</span>
+                            <span style="text-decoration: line-through; font-family: monospace;">₹{{ med.comparisons.base_price }}</span>
+                        </div>
+                        
+                        <!-- Pharmacy cost matrix list -->
+                        <div class="pharmacy-list">
+                            {% for pharm in med.comparisons.pharmacies %}
+                                <div class="pharmacy-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 24px; height: 24px; border-radius: 4px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: var(--text-cyan);">
+                                            P
+                                        </div>
+                                        <div>
+                                            <h4 style="font-size: 0.92rem; font-weight: 600; color: #E2E8F0;">{{ pharm.name }}</h4>
+                                            <div style="display: flex; gap: 8px; align-items: center; font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">
+                                                <span>Rating: ⭐{{ pharm.rating }}</span>
+                                                <span>•</span>
+                                                <span>Delivery: {{ pharm.delivery_days }} days</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; align-items: center; gap: 16px;">
+                                        <div style="text-align: right;">
+                                            <div style="font-family: 'Orbitron', monospace; font-size: 1rem; color: var(--text-green); font-weight: 700;">₹{{ pharm.price }}</div>
+                                            <div style="font-size: 0.7rem; color: #F59E0B; font-weight: 600;">{{ pharm.discount }}% OFF</div>
+                                        </div>
+                                        
+                                        <a href="{{ pharm.buy_link }}" target="_blank" class="btn-neon-cyan" style="padding: 6px 14px; font-size: 0.78rem; text-decoration: none; border-radius: 6px; box-shadow: none;">
+                                            Order Now
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div class="glass-card" style="padding: 40px; text-align: center; border-style: dashed; border-color: rgba(6,182,212,0.15);">
+                <i data-lucide="shopping-bag" style="width: 32px; height: 32px; color: var(--text-muted); opacity: 0.5; margin-bottom: 12px;"></i>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">No medications prescribed yet. Pharmacy comparisons will automatically load when a prescription is active.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

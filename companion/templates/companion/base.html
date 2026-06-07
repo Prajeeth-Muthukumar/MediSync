@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CareSync Companion{% endblock %}</title>
+    
+    <!-- CSS styles -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* Modern CSS Reset & Layout Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        header {
+            background: rgba(4, 13, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 24px;
+        }
+        
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--text-cyan);
+            text-shadow: 0 0 10px var(--primary-cyan-glow);
+        }
+        
+        main {
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(4, 13, 26, 0.5);
+            margin-top: 60px;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo-container">
+            <div style="background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);">
+                <i data-lucide="shield-pulse" style="color: #040D1A; stroke-width: 2.5px;"></i>
+            </div>
+            <span class="logo-text">CareSync Companion</span>
+        </div>
+        
+        <nav>
+            <ul>
+                <li>
+                    <a href="/doctor/{% if selected_patient %}?patient_id={{ selected_patient.id }}{% endif %}" class="{% if current_page == 'doctor' %}active{% endif %}">
+                        <i data-lucide="clipboard-signature" style="width: 16px; height: 16px;"></i> Doctor Workspace
+                    </a>
+                </li>
+                <li>
+                    <a href="/patient/{% if selected_patient %}?patient_id={{ selected_patient.id }}{% endif %}" class="{% if current_page == 'patient' %}active{% endif %}">
+                        <i data-lucide="heart-handshake" style="width: 16px; height: 16px;"></i> Patient Companion
+                    </a>
+                </li>
+                <li>
+                    <a href="/pharmacy/" class="{% if current_page == 'pharmacy' %}active{% endif %}">
+                        <i data-lucide="shopping-bag" style="width: 16px; height: 16px;"></i> Online Pharmacy
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="digital-clock" id="live-digital-clock">
+            <!-- Loaded via dashboard.js -->
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 CareSync Interoperability Gateway | HIPAA-Compliant Secured Sandbox Environment</p>
+    </footer>
+
+    <!-- Global Floating Alerts Toast Container -->
+    <div class="toast-container" id="global-toast-container"></div>
+
+    <!-- JS Scripts -->
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <script>
+        // Initialize Lucide Icons globally
+        lucide.createIcons();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

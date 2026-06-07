@@ -1,0 +1,328 @@
+{% extends 'companion/base.html' %}
+
+{% block title %}CareSync Doctor Workspace{% endblock %}
+
+{% block extra_head %}
+<style>
+    .doctor-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    @media (min-width: 992px) {
+        .doctor-grid {
+            grid-template-columns: 1.2fr 0.8fr;
+        }
+    }
+    
+    .status-banner {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        padding: 16px 24px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+    
+    .status-banner i {
+        color: var(--text-green);
+        filter: drop-shadow(0 0 5px var(--primary-green-glow));
+    }
+    
+    .search-section {
+        margin-bottom: 30px;
+        padding: 24px;
+    }
+    
+    .search-flex {
+        display: flex;
+        gap: 16px;
+        margin-top: 16px;
+    }
+    
+    .patient-summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 20px;
+    }
+    
+    .detail-item {
+        margin-bottom: 12px;
+    }
+    
+    .detail-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .detail-val {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-top: 4px;
+    }
+    
+    .json-preview {
+        background: #020710;
+        border: 1px solid rgba(6, 182, 212, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        color: #A5F3FC;
+        overflow-x: auto;
+        max-height: 400px;
+        white-space: pre-wrap;
+    }
+    
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.25rem;
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 10px;
+    }
+    
+    .section-title i {
+        color: var(--text-cyan);
+    }
+    
+    .med-form-card {
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Doctor Header Title -->
+<div style="margin-bottom: 30px;">
+    <h1 class="neon-title" style="font-size: 2.2rem; margin-bottom: 8px;">CareSync Doctor Workspace</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Logged in: <strong class="text-slate-300">Dr. Sarah Jenkins</strong> (Cardiology) | NPI_DOC_CARDIO_001</p>
+</div>
+
+<!-- Verified Provider Status Banner (Replicating Screenshot) -->
+<div class="status-banner">
+    <i data-lucide="shield-check" style="width: 28px; height: 28px;"></i>
+    <div>
+        <h4 style="color: var(--text-green); font-weight: 700; font-size: 1.05rem;">Verified Medical Provider Status Active</h4>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">
+            Your credentials have been successfully authenticated against the National Practitioner Registry. You are authorized to create FHIR-compliant Health Records.
+        </p>
+    </div>
+</div>
+
+<!-- Search Patient Registry (Replicating Screenshot) -->
+<div class="glass-card search-section">
+    <h3 style="font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="search" style="width: 18px; height: 18px; color: var(--text-cyan);"></i> Search Patient Registry
+    </h3>
+    
+    <form method="GET" action="/doctor/">
+        <div class="search-flex">
+            <select name="patient_id" class="form-input" style="flex-grow: 1;" onchange="this.form.submit()">
+                <option value="">-- Select / Search Patient --</option>
+                {% for p in patients %}
+                    <option value="{{ p.id }}" {% if selected_patient.id == p.id %}selected{% endif %}>
+                        {{ p.name }} (Phone: {{ p.phone }})
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-neon-cyan">Find Patient</button>
+        </div>
+    </form>
+</div>
+
+{% if selected_patient %}
+<!-- Side-by-side Doctor Workspace -->
+<div class="doctor-grid">
+    
+    <!-- Left Column: Input Clinical Session / Prescription Form -->
+    <div>
+        <div class="glass-card med-form-card">
+            <div class="section-title">
+                <i data-lucide="prescription"></i>
+                <h2>Input New Clinical Session</h2>
+            </div>
+            
+            <form method="POST" action="/doctor/rx/save/">
+                {% csrf_token %}
+                <input type="hidden" name="patient_id" value="{{ selected_patient.id }}">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Attending Clinician</label>
+                        <input type="text" name="doctor_name" value="Dr. Sarah Jenkins" readonly class="form-input w-full" style="background: rgba(255,255,255,0.02) !important; color: #94A3B8 !important;">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">ICD-10 Diagnosis Search</label>
+                        <input type="text" name="diagnosis" value="Essential Hypertension (I10)" required class="form-input w-full">
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 0.95rem; text-transform: uppercase; color: var(--text-cyan); letter-spacing: 0.05em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="pill" style="width: 16px; height: 16px;"></i> Medication List & Schedules
+                </h3>
+                
+                <!-- Dynamic Medication Rows Container -->
+                <div id="medication-rows-container">
+                    <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 mb-4 transition-all duration-300 relative" id="med-row-1">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Medication Name</label>
+                                <input type="text" name="med_name[]" placeholder="e.g., Metformin 500mg" required class="form-input w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Dosage Instruction</label>
+                                <input type="text" name="dosage[]" placeholder="e.g., 1 tablet" required class="form-input w-full">
+                            </div>
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Frequency (Natural Language Parsing)</label>
+                                <input type="text" name="frequency[]" placeholder="e.g., Twice a day after food" required data-row-id="1" class="form-input w-full frequency-nlp-input">
+                                <div id="freq-parse-feedback-1" class="min-h-[20px]">
+                                    <!-- Populated on-the-fly via keyup NLP parser API -->
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Duration (Days)</label>
+                                <input type="number" name="duration[]" value="10" min="1" required class="form-input w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <button type="button" id="add-med-row-btn" class="btn-glass" style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Add Medication
+                    </button>
+                    <button type="submit" class="btn-neon-green" style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="calendar-check" style="width: 18px; height: 18px;"></i> Save Prescription & Schedule Timeline
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Live Alert Dispatch Logger Board (Highly satisfying) -->
+        <div class="glass-card" style="padding: 24px;">
+            <div class="section-title">
+                <i data-lucide="message-square"></i>
+                <h2>WhatsApp Engagement Dispatch Logs</h2>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: -10px; margin-bottom: 20px;">
+                This feed monitors automated patient alerts. Simulated alert toasts will pop up at scheduled timestamps.
+            </p>
+            
+            <div id="doctor-notification-logs-list" class="max-h-[300px] overflow-y-auto" style="border: 1px solid var(--border-color); border-radius: 8px; background: rgba(4, 13, 26, 0.4);">
+                <!-- Populated dynamically via dashboard.js polling -->
+                <div class="p-6 text-center text-slate-500 text-sm">No notification alerts dispatched yet.</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Patient Profile & Live FHIR JSON Preview (Replicating Screenshot) -->
+    <div>
+        <!-- Selected Patient profile -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 30px;">
+            <div class="section-title" style="margin-bottom: 16px;">
+                <i data-lucide="user"></i>
+                <h2>Selected Patient</h2>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.3); display: flex; align-items: center; justify-content: center; color: var(--text-cyan); font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.25rem;">
+                    {{ selected_patient.name|slice:":1" }}
+                </div>
+                <div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #FFF;">{{ selected_patient.name }}</h3>
+                    <span class="badge-status badge-taken font-mono" style="font-size: 10px;">ID-P-{{ selected_patient.id|slice:"-6:"|upper }}</span>
+                </div>
+            </div>
+            
+            <div class="patient-summary-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Gender</div>
+                    <div class="detail-val">{{ selected_patient.gender }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Birth Date</div>
+                    <div class="detail-val">{% if selected_patient.name == "Jeevan" %}2004-07-02{% else %}1981-11-20{% endif %}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Telecom</div>
+                    <div class="detail-val" style="font-family: monospace; color: var(--text-cyan);">{{ selected_patient.phone }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Address</div>
+                    <div class="detail-val">{{ selected_patient.address }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live FHIR Resource Preview (Replicating Screenshot) -->
+        <div class="glass-card" style="padding: 24px;">
+            <div class="section-title" style="margin-bottom: 12px;">
+                <i data-lucide="file-json"></i>
+                <h2>Live FHIR Resource Preview</h2>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: -8px; margin-bottom: 16px;">
+                This side-by-side display compiles your forms in real-time to match HL7 FHIR standards.
+            </p>
+            
+            <div class="json-preview" id="live-fhir-preview">{
+  "resourceType": "Bundle",
+  "id": "bundle-preview-{{ selected_patient.id|slice:"-6:" }}",
+  "type": "collection",
+  "timestamp": "{% now "Y-m-d\TH:i:s\Z" %}",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:patient-{{ selected_patient.id }}",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "{{ selected_patient.id }}",
+        "name": [ { "use": "official", "text": "{{ selected_patient.name }}" } ],
+        "gender": "{{ selected_patient.gender|lower }}",
+        "telecom": [ { "system": "phone", "value": "{{ selected_patient.phone }}", "use": "mobile" } ],
+        "address": [ { "text": "{{ selected_patient.address }}" } ]
+      }
+    }{% if prescriptions %},
+    {
+      "fullUrl": "urn:uuid:prescription-latest",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "status": "active",
+        "intent": "order",
+        "subject": { "reference": "Patient/{{ selected_patient.id }}" },
+        "medicationCodeableConcept": { "text": "{{ prescriptions.0.medications.0.name }}" },
+        "dosageInstruction": [
+          {
+            "text": "{{ prescriptions.0.medications.0.frequency }}",
+            "doseAndRate": [ { "doseQuantity": { "value": 1, "unit": "{{ prescriptions.0.medications.0.dosage }}" } } ]
+          }
+        ]
+      }
+    }{% endif %}
+  ]
+}</div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="glass-card" style="padding: 60px; text-align: center; border-style: dashed; border-color: rgba(6, 182, 212, 0.25);">
+    <i data-lucide="users" style="width: 48px; height: 48px; color: var(--text-cyan); opacity: 0.5; margin-bottom: 16px;"></i>
+    <h3 style="font-size: 1.3rem; margin-bottom: 8px;">No Patient Selected</h3>
+    <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 500px; margin: 0 auto 20px;">
+        Please search or select a patient from the CareSync registry dropdown above to input clinical sessions and manage automated companion alerts.
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}

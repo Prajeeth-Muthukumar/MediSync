@@ -27,3 +27,19 @@ Thumbs.db
 
 # MongoDB local JSON db fallback
 db_json/
+
+# Venv inside apps
+donor_network/Include/
+donor_network/Lib/
+donor_network/Scripts/
+donor_network/pyvenv.cfg
+donor_network/*.exe
+donor_network/activate*
+donor_network/deactivate*
+companion/Include/
+companion/Lib/
+companion/Scripts/
+companion/pyvenv.cfg
+companion/*.exe
+companion/activate*
+companion/deactivate*

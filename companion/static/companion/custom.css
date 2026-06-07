@@ -1,0 +1,273 @@
+/* CareSync Companion - Premium Medical UI Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-dark: #040D1A;
+    --bg-card: rgba(11, 25, 44, 0.75);
+    --bg-card-hover: rgba(15, 32, 55, 0.85);
+    
+    --primary-cyan: #06B6D4;
+    --primary-cyan-glow: rgba(6, 182, 212, 0.4);
+    --primary-green: #10B981;
+    --primary-green-glow: rgba(16, 185, 129, 0.4);
+    
+    --border-color: rgba(6, 182, 212, 0.15);
+    --border-glow: rgba(6, 182, 212, 0.25);
+    
+    --text-main: #F8FAFC;
+    --text-muted: #64748B;
+    --text-cyan: #22D3EE;
+    --text-green: #34D399;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    border-color: rgba(6, 182, 212, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(6, 182, 212, 0.15);
+    transform: translateY(-2px);
+}
+
+.glass-card-glow-cyan {
+    border-color: rgba(6, 182, 212, 0.4) !important;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.25) !important;
+}
+
+.glass-card-glow-green {
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.25) !important;
+}
+
+/* Typography & Headers */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.neon-title {
+    background: linear-gradient(135deg, #FFF 30%, #22D3EE 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+.digital-clock {
+    font-family: 'Orbitron', monospace;
+    color: var(--text-cyan);
+    text-shadow: 0 0 8px var(--primary-cyan-glow);
+}
+
+/* Buttons */
+.btn-neon-cyan {
+    background: linear-gradient(135deg, #0891B2 0%, #06B6D4 100%);
+    color: #FFF;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 20px;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn-neon-cyan:hover {
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.6);
+    transform: scale(1.02);
+}
+
+.btn-neon-green {
+    background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+    color: #FFF;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 20px;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn-neon-green:hover {
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+    transform: scale(1.02);
+}
+
+.btn-glass {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-glass:hover {
+    background: rgba(6, 182, 212, 0.1);
+    border-color: var(--primary-cyan);
+}
+
+/* Forms */
+.form-input {
+    background: rgba(4, 13, 26, 0.6) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    transition: all 0.2s ease !important;
+}
+
+.form-input:focus {
+    border-color: var(--primary-cyan) !important;
+    box-shadow: 0 0 10px var(--primary-cyan-glow) !important;
+    outline: none !important;
+}
+
+/* Interactive Timelines & Checklists */
+.timeline-item {
+    position: relative;
+    border-left: 2px solid var(--border-color);
+    padding-left: 24px;
+    padding-bottom: 24px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg-dark);
+    border: 2px solid var(--primary-cyan);
+    box-shadow: 0 0 8px var(--primary-cyan-glow);
+    transition: all 0.2s ease;
+}
+
+.timeline-item.taken::before {
+    border-color: var(--primary-green);
+    background: var(--primary-green);
+    box-shadow: 0 0 8px var(--primary-green-glow);
+}
+
+.timeline-item.missed::before {
+    border-color: #EF4444;
+    background: #EF4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.timeline-time {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    color: var(--text-cyan);
+    margin-bottom: 4px;
+}
+
+/* Real-time Toast Notifications */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast-alert {
+    background: rgba(11, 25, 44, 0.95);
+    border: 1px solid var(--primary-cyan);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: var(--text-main);
+    box-shadow: 0 0 20px var(--primary-cyan-glow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 320px;
+    max-width: 450px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Badge tags */
+.badge-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.badge-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.badge-sent {
+    background: rgba(6, 182, 212, 0.1);
+    color: #06B6D4;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.badge-taken {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.badge-missed {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Pharmacy price comparison card styles */
+.pharmacy-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 0;
+    transition: background 0.2s ease;
+}
+
+.pharmacy-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.pharmacy-row:last-child {
+    border-bottom: none;
+}
