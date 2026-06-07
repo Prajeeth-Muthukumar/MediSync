@@ -1,0 +1,8 @@
+django>=4.2,<5.0
+djangorestframework
+pymongo
+celery
+twilio
+django-cors-headers
+langchain-core
+langchain-community

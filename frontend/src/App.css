@@ -1,0 +1,6 @@
+/* CareSync core layouts are driven by index.css. Minimal resets here. */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
